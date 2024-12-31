@@ -12,7 +12,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from news_tls import data, utils, summarizers
 from nltk.corpus import stopwords
 
-from tools import get_chinese_date 
+from utils.tools import get_chinese_date 
 chinese_stopwords = stopwords.words('chinese')
 
 random.seed(42)
