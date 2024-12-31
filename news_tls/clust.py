@@ -13,7 +13,7 @@ from typing import List
 from news_tls import utils, data
 from nltk.corpus import stopwords
 
-from tools import get_chinese_date
+from utils.tools import get_chinese_date
 
 chinese_stopwords = stopwords.words('chinese')
 
