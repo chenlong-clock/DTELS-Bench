@@ -1,7 +1,7 @@
 #  DTELS: Towards Dynamic Granularity of TimeLine Summarization 
 🔗 Preprint Link: https://arxiv.org/abs/2411.09297
 
-🎉 This paper has been accepted as the NAACL 2025 main conference paper!
+🎉 This paper has been accepted as the NAACL 2025 main conference paper! (https://aclanthology.org/2025.naacl-long.136/)
 
 ## 📌 Introduction
 We extend the task of **Timeline Summarization (TLS)** to a new paradigm with timelines at dynamic granularities. We propose a benchamrk containing **[Dataset](#Dataset)**, **[Metrics](#Metrics)** and **[Evaluations](#Evaluations)**.
