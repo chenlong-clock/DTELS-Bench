@@ -6,13 +6,26 @@ from time import strptime, struct_time
 import arrow
 import numpy as np
 from scipy import sparse
+
+# Import sklearn compatibility fix before any sklearn imports
+try:
+    import sklearn_compat
+except ImportError:
+    # If running from a different directory, try to import from parent directory
+    import sys
+    import os
+    parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if parent_dir not in sys.path:
+        sys.path.insert(0, parent_dir)
+    import sklearn_compat
+
 from sklearn.preprocessing import normalize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from news_tls import data, utils, summarizers
 from nltk.corpus import stopwords
 
-from utils.tools import get_chinese_date 
+from utils.tools import get_chinese_date, split_chinese 
 chinese_stopwords = stopwords.words('chinese')
 
 random.seed(42)
@@ -44,7 +57,7 @@ class DatewiseTimelineGenerator():
         print('vectorizer...')
         vectorizer = TfidfVectorizer(stop_words=chinese_stopwords, lowercase=True)
         
-        vectorizer.fit([s for a in collection.docs for s in a.sentences])
+        vectorizer.fit([s for a in collection for s in split_chinese(a.content)])
 
         print('date ranking...')
         ranked_dates = self.date_ranker.rank_dates(collection)
@@ -95,7 +108,7 @@ class DateRanker:
 
 class RandomDateRanker(DateRanker):
     def rank_dates(self, collection):
-        dates = [a.time.date() for a in collection.articles()]
+        dates = [a.time.date() for a in collection]
         random.shuffle(dates)
         return dates
 
@@ -103,9 +116,9 @@ class RandomDateRanker(DateRanker):
 class MentionCountDateRanker(DateRanker):
     def rank_dates(self, collection):
         date_to_count = collections.defaultdict(int)
-        for a in collection.articles():
-            for s in a.sentences:
-                d = s.get_date()
+        for a in collection:
+            for s in split_chinese(a.content):
+                d = get_chinese_date(s)
                 if d:
                     date_to_count[d] += 1
         ranked = sorted(date_to_count.items(), key=lambda x: x[1], reverse=True)
@@ -114,7 +127,7 @@ class MentionCountDateRanker(DateRanker):
 
 class PubCountDateRanker(DateRanker):
     def rank_dates(self, collection):
-        dates = [a.time.date() for a in collection.articles()]
+        dates = [a.time.date() for a in collection]
         counts = collections.Counter(dates)
         ranked = sorted(counts.items(), key=lambda x: x[1], reverse=True)
         return [d for d, _ in ranked]
@@ -171,10 +184,10 @@ class SupervisedDateRanker(DateRanker):
             'docs_published': 0
         }
         date_to_feats = collections.defaultdict(default)
-        for a in collection.docs:
+        for a in collection:
             pub_date = arrow.get(a.time)
             mentioned_dates = []
-            for s in a.sentences:
+            for s in split_chinese(a.content):
                 d = get_chinese_date(s)
                 if not d:
                     continue
@@ -203,9 +216,9 @@ class SupervisedDateRanker(DateRanker):
 class M_SentenceCollector:
     def collect_sents(self, ranked_dates, collection, vectorizer, include_titles):
         date_to_ment = collections.defaultdict(list)
-        for a in collection.articles():
-            for s in a.sentences:
-                ment_date = s.get_date()
+        for a in collection:
+            for s in split_chinese(a.content):
+                ment_date = get_chinese_date(s)
                 if ment_date:
                     date_to_ment[ment_date].append(s)
         for d in ranked_dates:
@@ -222,14 +235,14 @@ class P_SentenceCollector:
 
     def collect_sents(self, ranked_dates, collection, vectorizer, include_titles):
         date_to_pub = collections.defaultdict(list)
-        for a in collection.articles():
+        for a in collection:
             pub_date = a.time.date()
             if include_titles:
                 for k in range(self.pub_end):
                     pub_date2 = pub_date - datetime.timedelta(days=k)
-                    if a.title_sentence:
-                        date_to_pub[pub_date2].append(a.title_sentence)
-            for s in a.sentences[:self.clip_sents]:
+                    if a.title:
+                        date_to_pub[pub_date2].append(a.title)
+            for s in split_chinese(a.content)[:self.clip_sents]:
                 for k in range(self.pub_end):
                     pub_date2 = pub_date - datetime.timedelta(days=k)
                     date_to_pub[pub_date2].append(s)
@@ -247,15 +260,15 @@ class PM_All_SentenceCollector:
 
     def collect_sents(self, ranked_dates, collection, vectorizer, include_titles):
         date_to_sents = collections.defaultdict(list)
-        for a in collection.articles():
+        for a in collection:
             pub_date = a.time.date()
             if include_titles:
                 for k in range(self.pub_end):
                     pub_date2 = pub_date - datetime.timedelta(days=k)
-                    if a.title_sentence:
-                        date_to_sents[pub_date2].append(a.title_sentence)
-            for j, s in enumerate(a.sentences):
-                ment_date = s.get_date()
+                    if a.title:
+                        date_to_sents[pub_date2].append(a.title)
+            for j, s in enumerate(split_chinese(a.content)):
+                ment_date = get_chinese_date(s)
                 if ment_date:
                     date_to_sents[ment_date].append(s)
                 elif j <= self.clip_sents:
@@ -284,14 +297,14 @@ class PM_Mean_SentenceCollector:
     def _first_pass(self, collection, include_titles):
         date_to_ment = collections.defaultdict(list)
         date_to_pub = collections.defaultdict(list)
-        for a in collection.docs:
+        for a in collection:
             pub_date = arrow.get(a.time)
             if include_titles:
                 for k in range(self.pub_end):
                     pub_date2 = pub_date - datetime.timedelta(days=k)
-                    if a.title_sentence:
-                        date_to_pub[pub_date2].append(a.title_sentence)
-            for j, s in enumerate(a.sentences):
+                    if a.title:
+                        date_to_pub[pub_date2].append(a.title)
+            for j, s in enumerate(split_chinese(a.content)):
                 ment_date = get_chinese_date(s)
                 if ment_date:
                     date_to_ment[ment_date].append(s)
