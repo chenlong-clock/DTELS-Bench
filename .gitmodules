@@ -1,3 +1,3 @@
-[submodule "Time_NLP"]
-	path = Time_NLP
-	url = git@github.com:zhanzecheng/Time_NLP.git
+[submodule "time_nlp"]
+	path = time_nlp
+	url = https://github.com/zhanzecheng/Time_NLP.git
