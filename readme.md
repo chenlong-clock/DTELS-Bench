@@ -10,6 +10,7 @@ We extend the task of **Timeline Summarization (TLS)** to a new paradigm with ti
 - [🛠️ Installation](#️-installation)
 - [🚀 Usage](#-usage)
 - [📁 Project Structure](#-project-structure)
+- [🔧 Troubleshooting](#-troubleshooting)
 - [✨ Citation](#-citation)
 
 ## ✨Citation 
@@ -32,10 +33,17 @@ We extend the task of **Timeline Summarization (TLS)** to a new paradigm with ti
 
 ### Setup Environment
 
-1. **Clone the repository**
+1. **Clone the repository with submodules**
+```bash
+git clone --recursive https://github.com/chenlong-clock/DTELS-Bench.git
+cd DTELS-Bench
+```
+
+**Or if you already cloned without submodules:**
 ```bash
 git clone https://github.com/chenlong-clock/DTELS-Bench.git
 cd DTELS-Bench
+git submodule update --init --recursive
 ```
 
 2. **Create and activate conda environment**
@@ -117,7 +125,31 @@ DTELS-Bench/
 ├── utils/                   # Utility functions
 │   ├── data.py              # Data loading and processing
 │   └── tools.py             # Helper functions
-├── time_nlp/               # Chinese time expression processing
+├── time_nlp/               # Chinese time expression processing (Git submodule)
 ├── main_extract.py         # Main extraction script
 └── sklearn_compat.py       # scikit-learn compatibility fixes
 ```
+
+## 🔧 Troubleshooting
+
+### time_nlp Submodule Issues
+
+If you encounter issues with the `time_nlp` module not being visible or importable:
+
+1. **Check if submodule is initialized:**
+```bash
+git submodule status
+```
+
+2. **Initialize/update submodules:**
+```bash
+git submodule update --init --recursive
+```
+
+3. **If submodule is empty or missing:**
+```bash
+git submodule sync
+git submodule update --init --recursive
+```
+
+The `time_nlp` directory is a Git submodule pointing to the [Time_NLP project](https://github.com/zhanzecheng/Time_NLP) for Chinese time expression recognition.
