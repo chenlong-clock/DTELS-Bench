@@ -8,7 +8,7 @@ import json
 import arrow
 import numpy as np
 from half_json.core import JSONFixer
-from time_nlp import TimeNormalizer
+from time_nlp.TimeNormalizer import TimeNormalizer
 
 
 def load_json(path):
@@ -93,13 +93,13 @@ def get_chinese_date(text):
         try:
             matched_time = json.loads(tn.parse(text))
         except:
-            raise ValueError
+            return None
         if 'error' in matched_time:
-            raise ValueError
+            return None
         if 'timestamp' in matched_time:
             matched_date = arrow.get(matched_time['timestamp'])
         elif 'timespan' in matched_time:
             matched_date = arrow.get(matched_time['timespan'][0])
         else:
-            raise ValueError
+            return None
     return matched_date

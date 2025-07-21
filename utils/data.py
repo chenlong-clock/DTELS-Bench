@@ -4,7 +4,7 @@ import arrow
 from utils.tools import formatting_date, get_chinese_date, load_json, split_chinese
 import os
 class DTELSArticles(OrderedDict):
-    def __init__(self, articles_ids=None, articles_path="articles", filter_low_quality_articles=True):
+    def __init__(self, articles_path="articles", articles_ids=None, filter_low_quality_articles=True):
         for tf in os.listdir(articles_path):
             tid = int(tf.split(".")[0])
             if (tf.endswith(".jsonl") and articles_ids is not None and tid in articles_ids) or articles_ids is None:
