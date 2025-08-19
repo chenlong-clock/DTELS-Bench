@@ -2,11 +2,10 @@
 
 ## 📰 News
 
-🔗 Preprint Link: https://arxiv.org/abs/2411.09297
 
-🎉 This paper has been accepted as the NAACL 2025 main conference paper! (https://aclanthology.org/2025.naacl-long.136/)
-
-🏆 We organized CCKS 2025 Shared Task - Event Timeline Generation for Social Media (https://tianchi.aliyun.com/competition/entrance/532361)
+- **Aug. 2025**: 🏆 Successfully organized CCKS 2025 Shared Task on Event Timeline Generation for Social Media on  [Tianchi Competition](https://tianchi.aliyun.com/competition/entrance/532361)
+- **Apr. 2025**: 🎉 Paper accepted to [NAACL 2025 main conference Proceedings](https://aclanthology.org/2025.naacl-long.136/)
+- **Nov. 2024**: 📝 Paper preprint published on [arXiv:2411.09297](https://arxiv.org/abs/2411.09297)
 
 ## 📌 Introduction
 We extend the task of **Timeline Summarization (TLS)** to a new paradigm with timelines at dynamic granularities. We propose a benchmark containing **[Dataset](#Dataset)**, **[Metrics](#Metrics)** and **[Evaluations](#Evaluations)**.
