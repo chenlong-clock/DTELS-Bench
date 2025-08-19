@@ -4,6 +4,10 @@ import logging
 import os
 import pickle
 from tqdm import tqdm
+
+# Import sklearn compatibility fix before any sklearn imports or pickle loads
+import sklearn_compat
+
 from utils.data import DTELSArticles, Timeline
 from news_tls.clust import ClusterDateMentionCountRanker, ClusteringTimelineGenerator, TemporalMarkovClusterer
 from news_tls.summarizers import CentroidOpt
@@ -16,7 +20,24 @@ def main(args):
     if not os.path.exists(os.path.dirname(output_fn)):
         os.makedirs(os.path.dirname(output_fn))
     logging.basicConfig(filename=f'{os.path.dirname(output_fn)}/log_{args.method}.log', level=logging.INFO)
-    topics = DTELSArticles("./data", "gold_reference")
+    
+    # Load articles
+    articles_data = DTELSArticles("./articles")
+    
+    # Load gold reference timelines
+    timelines = {}
+    with open("./data/gold_reference.jsonl", "r") as f:
+        for line in f:
+            data = json.loads(line)
+            timeline = Timeline(data)
+            timelines[timeline.id] = timeline
+    
+    # Create topics as list of (timeline, articles) pairs
+    topics = []
+    for tid in articles_data.keys():
+        if tid in timelines:
+            topics.append((timelines[tid], articles_data[tid]))
+    
     exist_tls = []
     
     if os.path.exists(output_fn):
