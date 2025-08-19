@@ -68,4 +68,4 @@ sh py_entrance.sh input_param.json eval_result.json
 
 ## License
 
-This project is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License**. See the [LICENSE](LICENSE) file for details. This means it can be used and adapted for non-commercial research purposes, but any derivatives must be shared under the same license.
+This project is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License**. See the [LICENSE](../LICENSE) file for details. This means it can be used and adapted for non-commercial research purposes, but any derivatives must be shared under the same license.
