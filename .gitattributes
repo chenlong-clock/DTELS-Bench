@@ -1,1 +1,2 @@
 ccks2025_demo/answer.jsonl filter=lfs diff=lfs merge=lfs -text
+*.jsonl filter=lfs diff=lfs merge=lfs -text
